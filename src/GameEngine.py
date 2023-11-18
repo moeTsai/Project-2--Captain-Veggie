@@ -46,6 +46,25 @@ class GameEngine:
     def getScore():
         pass
 
+    def moveRabbits():
+        pass
+
+    def moveCptVertical():
+        pass
+
+    def moveCptHorizontal():
+        pass
+
+    def moveCaptain():
+        pass
+
+    def gameOver():
+        pass
+
+    def highScore():
+        pass
+
+
 
     def getVeggiesNum(cls):
         """
