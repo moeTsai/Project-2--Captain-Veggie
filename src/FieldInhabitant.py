@@ -14,7 +14,7 @@ class FieldInhabitant:
         """
         self._symbol = symbol
 
-    def get_symbol(self):
+    def getSymbol(self):
         """
         Gets the symbol of the FieldInhabitant.
 
@@ -22,7 +22,7 @@ class FieldInhabitant:
         """
         return self._symbol
 
-    def set_symbol(self, symbol):
+    def setSymbol(self, symbol):
         """
         Sets the symbol of the FieldInhabitant.
 

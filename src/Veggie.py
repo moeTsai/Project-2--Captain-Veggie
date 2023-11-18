@@ -28,7 +28,7 @@ class Veggie(FieldInhabitant):
         """
         return f"Symbol: {self.symbol}, Name: {self.__name}, Points: {self.__points}"
 
-    def get_name(self):
+    def getName(self):
         """
         Gets the name of the Veggie.
 
@@ -36,7 +36,7 @@ class Veggie(FieldInhabitant):
         """
         return self.__name
 
-    def set_name(self, name):
+    def setName(self, name):
         """
         Sets the name of the Veggie.
 
@@ -44,7 +44,7 @@ class Veggie(FieldInhabitant):
         """
         self.__name = name
 
-    def get_points(self):
+    def getPoints(self):
         """
         Gets the points associated with the Veggie.
 
@@ -52,7 +52,7 @@ class Veggie(FieldInhabitant):
         """
         return self.__points
 
-    def set_points(self, points):
+    def setPoints(self, points):
         """
         Sets the points associated with the Veggie.
 
