@@ -6,9 +6,9 @@
 
 from FieldInhabitant import FieldInhabitant
 
-class Creature:
-    def __init__(self, symbol,x,y):
-        Creature.__init__(self,symbol)
+class Creature(FieldInhabitant):
+    def __init__(self,symbol,x,y):
+        FieldInhabitant.__init__(self,symbol)
         self._x = x
         self._y = y
 
