@@ -7,38 +7,38 @@
 from FieldInhabitant import FieldInhabitant
 
 class Creature(FieldInhabitant):
-    def __init__(self,symbol,x,y):
+    def __init__(self,symbol, row, col):
         FieldInhabitant.__init__(self,symbol)
-        self._x = x
-        self._y = y
+        self.__row = row
+        self.__col = col
 
 
-    def setX(self,x):
+    def setRow(self,row):
         """
-        setter for coordinate x
-        :param x: new coordinate x
+        setter for row coordinate
+        :param row: new row coordinate
         :return: none
         """
-        self._x = x
+        self.__row = row
 
-    def getX(self):
+    def getRow(self):
         """
-        getter for coordinate x
-        :return: coordinate x
+        getter for row coordinate
+        :return: row coordinate
         """
-        return self._x
+        return self.__row
 
-    def setY(self,y):
+    def setCol(self,col):
         """
-        setter for coordinate y
-        :param y: new coordinate y
+        setter for col coordinate
+        :param col: new col coordinate
         :return: none
         """
-        self._y =y
+        self.__col = col
 
-    def getY(self):
+    def getCol(self):
         """
-        getter for coordinate y
-        :return: coordinate y
+        getter for col coordinate
+        :return: col coordinate
         """
-        return self._y
+        return self.__col

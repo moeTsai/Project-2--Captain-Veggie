@@ -8,10 +8,10 @@ from Creature import Creature
 
 
 class Captain(Creature):
-    def __init__(self,symbol,x,y):
+    def __init__(self,x,y):
         """
         initialize a new instance of Captain object
-        :param symbol: Symbol of Captain
+        
         :param x: x coordinate
         :param y: y coordinate
         """
