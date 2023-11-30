@@ -72,19 +72,28 @@ class GameEngine:
                 # read the veggie name, symbol, and point
                 self.__veggieSymbol[line[0]] = line[1]
                 self.__veggieWorth[line[1]] = int(line[2])
+
+        # possible veggies
         possibleVeggies = list(self.__veggieSymbol.keys())
 
+        
         for _ in range(self.__NUMBEROFVEGGIES):
+            # randomly choose the location
             randomRow, randomCol = self.randomLocation(row, col)
             while self.__field[randomRow][randomCol]:
                 randomRow, randomCol = self.randomLocation(row, col)
             
+            # randomly choose the veggie
             generatedVeggie = random.choice(possibleVeggies)
             symbol = self.__veggieSymbol[generatedVeggie]
             point = self.__veggieWorth[symbol]
+
+            # create a veggie object
             veggie = Veggie(generatedVeggie, symbol, point)
 
+            # put the veggie in the field
             self.__field[randomRow][randomCol] = veggie
+            # put the veggie in the veggie list
             self.__vegetables.append(veggie)
         
         
@@ -92,16 +101,25 @@ class GameEngine:
         
 
     def initCaptain(self):
+        """
+        Initialize the captain
+        """
         row = len(self.__field)
         col = len(self.__field[0])
+
         randomRow, randomCol = self.randomLocation(row, col)
         while self.__field[randomRow][randomCol]:
             randomRow, randomCol = self.randomLocation(row, col)
+        # create a captain object
         self.__captain = Captain(randomRow, randomCol)
+        # put the captain in the field
         self.__field[randomRow][randomCol] = self.__captain
         
 
     def initRabbits(self):
+        """
+        Initialize the rabbits
+        """
         row = len(self.__field)
         col = len(self.__field[0])
         for _ in range(self.__NUMBEROFRABBITS):
@@ -109,16 +127,24 @@ class GameEngine:
             while self.__field[randomRow][randomCol]:
                 randomRow, randomCol = self.randomLocation(row, col)
             rabbit = Rabbit(randomRow, randomCol)
+            # put the rabbit in the field
             self.__rabbits.append(rabbit)
+            # put the rabbit in the field
             self.__field[randomRow][randomCol] = rabbit
 
 
     def initializeGame(self):
+        """
+        Initialize the game
+        """
         self.initVeggies()
         self.initCaptain()
         self.initRabbits()
 
     def remainingVeggies(self):
+        """
+        Return the number of remaining veggies in the game
+        """
         return len(self.__vegetables)
 
     def intro(self):
@@ -130,11 +156,13 @@ class GameEngine:
         """
         The contents of the field are output in a pleasing 2D grid format with a border around the entire grid
         """
-        # print border########################################
+
+        # print the top border
         for _ in range(len(self.__field[0]) * 2 + 2):
             print("#", end="")
         print()
         
+        # print the field
         for i in range(len(self.__field)):
             print("#", end="")
             for j in range(len(self.__field[0])):
@@ -143,14 +171,15 @@ class GameEngine:
                 else:
                     print(" ", end=" ")
             print("#")
-
+        # print the bottom border
         for _ in range(len(self.__field[0]) * 2 + 2):
             print("#", end="")
-        pass
 
     def getScore(self):
+        """
+        Return the score
+        """
         return self.__score
-        pass
 
     def removeVeggie(self, row, col):
         """
@@ -166,27 +195,22 @@ class GameEngine:
 
     def moveRabbits(self):
         """
-         the rabbit could move 1 space up, down, left, right, any diagonal direction,
-        or possibly not move at all
-        • If a Rabbit object attempts to move outside the boundaries of field it will
-        forfeit its move
-        • If a Rabbit object attempts to move into a space occupied by another Rabbit
-        object or a Captain object it will forfeit its move
-        • If a Rabbit object moves into a space occupied by a Veggie object, that
-        Veggie object is removed from field, and the Rabbit object will take its
-        place in field
-        • Note that Rabbit object’s appropriate member variables should be updated
-        with the new location as well
-        • Make sure you set the Rabbit object’s previous location in the field to None if
-        it has moved to a new location
+        Move the rabbits
         """
+
+        # possible directions
         direction = [[-1, -1], [-1, 0], [-1, 1], 
                      [0, -1], [0, 0], [0, 1],
                        [1, -1], [1, 0], [1, 1]]
+        
+        
         for rabbit in self.__rabbits:
+            # randomly choose a direction
             randomDirection = random.randint(0, 8)
             attemptRow = rabbit.getRow() + direction[randomDirection][0]
             attemptCol = rabbit.getCol() + direction[randomDirection][1]
+
+            # if the rabbit is moving out of the field, forfeit its move
             if (attemptRow < 0 or attemptRow >= len(self.__field)
                  or attemptCol < 0 or attemptCol >= len(self.__field[0])):
                 continue
@@ -202,6 +226,7 @@ class GameEngine:
                 self.__field[attemptRow][attemptCol].getSymbol() in list(self.__veggieSymbol.values())):
                 self.removeVeggie(attemptRow, attemptCol)
 
+            # move the rabbit
             self.__field[attemptRow][attemptCol] = rabbit
             self.__field[rabbit.getRow()][rabbit.getCol()] = None
             rabbit.setRow(attemptRow)
@@ -228,6 +253,11 @@ class GameEngine:
 
 
     def moveCptVertical(self, direction):
+        """
+        Move the captain vertically
+
+        :param direction: direction
+        """
         newCptRow = self.__captain.getRow() + direction
         newCptCol = self.__captain.getCol()
 
@@ -262,7 +292,12 @@ class GameEngine:
         pass
 
     def moveCptHorizontal(self, direction):
-        # same as moveCptVertical
+        """
+        Move the captain horizontally
+        
+        :param direction: direction
+        """
+
         newCptRow = self.__captain.getRow()
         newCptCol = self.__captain.getCol() + direction
 
@@ -289,8 +324,6 @@ class GameEngine:
         if self.__field[newCptRow][newCptCol].getSymbol() == "R":
             print("Don't step on the bunnies!")
             return
-
-        pass
 
     def moveCaptain(self):
         """
@@ -320,8 +353,6 @@ class GameEngine:
             print("You can't move that way!")
 
 
-        pass
-
     def gameOver(self):
         """
         ▪ The player is informed the game is over
@@ -329,14 +360,12 @@ class GameEngine:
         ▪ The player’s score is output
         """
 
-
         print("GAME OVER!")
         print("You managed to harvest the following vegetables:")
         for veggie in self.__captain.getVeggieList():
             print(veggie.getName())
         print(f"Your score was: {self.__score}")
         
-        pass
 
     def highScore(self):
         pass
