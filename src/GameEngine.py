@@ -8,6 +8,7 @@ import random
 from Veggie import Veggie
 from Captain import Captain
 from Rabbit import Rabbit
+from Snake import Snake
 import pickle
 
 class GameEngine:
@@ -24,6 +25,7 @@ class GameEngine:
         self.__field = []
         self.__rabbits = []
         self.__captain = None
+        self.__snake = None
         self.__vegetables = []
         self.__score = 0
 
@@ -115,7 +117,27 @@ class GameEngine:
         self.__captain = Captain(randomRow, randomCol)
         # put the captain in the field
         self.__field[randomRow][randomCol] = self.__captain
-        
+
+
+
+
+    def initSnake(self):
+        """
+        Initialize the snake
+        :return:
+        """
+        row = len(self.__field)
+        col = len(self.__field[0])
+
+        randomRow, randomCol = self.randomLocation(row, col)
+        while self.__field[randomRow][randomCol]:
+            randomRow, randomCol = self.randomLocation(row, col)
+
+        #create a snake object
+        self.__snake = Snake(randomRow, randomCol)
+
+        #put the snake in the field
+        self.__field[randomRow][randomCol] = self.__snake
 
     def initRabbits(self):
         """
@@ -134,6 +156,8 @@ class GameEngine:
             self.__field[randomRow][randomCol] = rabbit
 
 
+
+
     def initializeGame(self):
         """
         Initialize the game
@@ -141,6 +165,7 @@ class GameEngine:
         self.initVeggies()
         self.initCaptain()
         self.initRabbits()
+        self.initSnake()
 
     def remainingVeggies(self):
         """
@@ -149,6 +174,10 @@ class GameEngine:
         return len(self.__vegetables)
 
     def intro(self):
+        """
+        brief intro of the game
+        :return:
+        """
         print("Welcome to the game !\n")
         print("Your goal is to collect all the vegetables in the map.\n")
         print(f"Captain Symbol: {self.__captain.getSymbol()}, Rabbit Symbol: {self.__rabbits[0].getSymbol()}")
@@ -228,9 +257,9 @@ class GameEngine:
                 continue
             
             
-            # if the rabbit is moving to a space occupied by another rabbit or captain, forfeit its move
+            # if the rabbit is moving to a space occupied by another rabbit or captain or Snake, forfeit its move
             if (self.__field[attemptRow][attemptCol] and
-                self.__field[attemptRow][attemptCol].getSymbol() in ["R", "V"]):
+                self.__field[attemptRow][attemptCol].getSymbol() in ["R", "V" ,"S"]):
                 continue
 
             # if the rabbit is moving to a space occupied by veggie, remove the veggie
@@ -246,6 +275,51 @@ class GameEngine:
 
 
         pass
+
+
+    def moveSnake(self):
+        """
+        Move the snake
+        :return:
+        """
+        done = False
+        list = []
+        for key, value in self.__veggieSymbol.items():
+            list.append(value)
+
+        list.append("R")
+        list.append("V")
+
+
+        if self.__captain.getRow() - self.__snake.getRow()  > 0 :
+            direction = [1,0]
+        elif self.__snake.getRow() -self.__captain.getRow() ==0 :
+            if self.__snake.getCol() -self.__captain.getCol() > 0 :
+                direction = [0,-1]
+            else:
+                direction = [0,1]
+        else:
+            direction = [-1,0]
+
+        attemptRow = self.__snake.getRow() + direction[0]
+        attemptCol = self.__snake.getCol() + direction[1]
+
+
+
+
+        # if the snake is moving to a space occupied by another rabbit or vegetables, forfeit its move
+        if (self.__field[attemptRow][attemptCol] and
+                self.__field[attemptRow][attemptCol].getSymbol() in list):
+            pass
+        else:
+            self.__field[attemptRow][attemptCol] = self.__snake
+            self.__field[self.__snake.getRow()][self.__snake.getCol()] = None
+            self.__snake.setRow(attemptRow)
+            self.__snake.setCol(attemptCol)
+
+
+
+
 
     def moveC(self, row, col):
         """
@@ -296,9 +370,24 @@ class GameEngine:
         if self.__field[newCptRow][newCptCol].getSymbol() == "R":
             print("Don't step on the bunnies!")
             return
-        
 
-        
+        if self.__field[newCptRow][newCptCol].getSymbol() == "S":
+            print("Your are bitten by a snake !")
+            #pop out items
+            if len(self.__captain.getVeggieList()) >= 5:
+                for i in range(5):
+                    point = self.__veggieWorth[self.__captain.getVeggieList(-1).getSymbol()]
+                    self.__captain.getVeggieList().pop()
+                    self.__score -= point
+            else:
+                self.__captain.getVeggieList().clear()
+                self.__score = 0
+
+            self.moveC(newCptRow, newCptCol)
+            self.__snake = None
+            self.initSnake()
+
+            return
 
 
         pass
@@ -335,6 +424,25 @@ class GameEngine:
         # Inform the player that they should not step on the rabbits, do not move the Captain object
         if self.__field[newCptRow][newCptCol].getSymbol() == "R":
             print("Don't step on the bunnies!")
+            return
+
+        # player step on the snake, pop out item
+        if self.__field[newCptRow][newCptCol].getSymbol() == "S":
+            print("Your are bitten by a snake !")
+            #pop out items
+            if len(self.__captain.getVeggieList()) >= 5:
+                for i in range(5):
+                    point = self.__veggieWorth[self.__captain.getVeggieList(-1).getSymbol()]
+                    self.__captain.getVeggieList().pop()
+                    self.__score -= point
+            else:
+                self.__captain.getVeggieList().clear()
+                self.__score = 0
+
+            self.moveC(newCptRow, newCptCol)
+            self.__snake = None
+            self.initSnake()
+
             return
 
     def moveCaptain(self):

@@ -25,7 +25,9 @@ def main():
         print(str(numVeggies) + " veggies remaining. Current score: " + str(game.getScore()))
         game.printField()
         game.moveRabbits()
+        game.moveSnake()
         game.moveCaptain()
+
         numVeggies = game.remainingVeggies()
     
     # End the game
