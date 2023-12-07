@@ -8,6 +8,7 @@ import random
 from Veggie import Veggie
 from Captain import Captain
 from Rabbit import Rabbit
+import pickle
 
 class GameEngine:
     __NUMBEROFVEGGIES = 30
@@ -148,8 +149,19 @@ class GameEngine:
         return len(self.__vegetables)
 
     def intro(self):
-        pass
+        print("Welcome to the game !\n")
+        print("Your goal is to collect all the vegetables in the map.\n")
+        print(f"Captain Symbol: {self.__captain.getSymbol()}, Rabbit Symbol: {self.__rabbits[0].getSymbol()}")
+        print("Below are the veggie names, symbol and points.\n")
 
+        for key, value in self.__veggieSymbol.items():
+            point = self.__veggieWorth.get(value)
+            print(f"Vegetables name: {key:13}, symbol:{value}, point:{point}")
+
+
+
+        print("\nGame started !")
+        print("-------------------------------------------------------------")
 
 
     def printField(self):
@@ -352,6 +364,13 @@ class GameEngine:
         else:
             print("You can't move that way!")
 
+    def getHighScoreFile(cls):
+        """
+        Return the high score file name
+
+        :return: high score file name
+        """
+        return cls.__HIGHSCOREFILE
 
     def gameOver(self):
         """
@@ -368,6 +387,39 @@ class GameEngine:
         
 
     def highScore(self):
+        scoreList=[]
+
+        if os.path.exists(self.getHighScoreFile()):
+            f = open(self.getHighScoreFile(), "rb")
+            scoreList = pickle.load(f)
+            f.close()
+            name = input("Please type in your initals: ")[:3]
+            scoreList.append((name,self.getScore()))
+
+            f = open(self.getHighScoreFile(), "wb")
+
+            scoreList = sorted(scoreList, key = lambda a:a[1], reverse = True )
+
+            pickle.dump(scoreList, f)
+            f.close()
+        else:
+            f = open(self.getHighScoreFile(), "wb")
+            name = input("Please type in your initals: ")[:3]
+            scoreList.append((name, self.getScore()))
+            pickle.dump(scoreList,f)
+            f.close()
+
+
+        print("\n---------Highest Score----------")
+        for _ in scoreList:
+            print(f"Name: {_[0]:4}  Score {_[1]}")
+
+
+
+
+
+
+
         pass
 
 
@@ -390,13 +442,7 @@ class GameEngine:
         return cls.__NUMBEROFRABBITS
 
 
-    def getHighScoreFile(cls):
-        """
-        Return the high score file name
-        
-        :return: high score file name
-        """
-        return cls.__HIGHSCOREFILE
+
 
 
     def getField(self):

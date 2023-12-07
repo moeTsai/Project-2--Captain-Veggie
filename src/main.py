@@ -18,7 +18,6 @@ def main():
     # Initialize the game
     game = GameEngine()
     game.initializeGame()
-
     # Start the game
     game.intro()
     numVeggies = game.remainingVeggies()
