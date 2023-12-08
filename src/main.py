@@ -26,6 +26,7 @@ def main():
         game.printField()
         game.moveRabbits()
         game.moveCaptain()
+        game.moveSnake()
         numVeggies = game.remainingVeggies()
     
     # End the game

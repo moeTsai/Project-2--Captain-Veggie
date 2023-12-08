@@ -8,6 +8,7 @@ import random
 from Veggie import Veggie
 from Captain import Captain
 from Rabbit import Rabbit
+from Snake import Snake
 import pickle
 
 class GameEngine:
@@ -133,6 +134,20 @@ class GameEngine:
             # put the rabbit in the field
             self.__field[randomRow][randomCol] = rabbit
 
+    def initSnake(self):
+        """
+        Initialize the snake
+        """
+        row = len(self.__field)
+        col = len(self.__field[0])
+        randomRow, randomCol = self.randomLocation(row, col)
+        while self.__field[randomRow][randomCol]:
+            randomRow, randomCol = self.randomLocation(row, col)
+        self.__snake = Snake(randomRow, randomCol)
+        self.__field[randomRow][randomCol] = self.__snake
+
+
+
 
     def initializeGame(self):
         """
@@ -141,6 +156,7 @@ class GameEngine:
         self.initVeggies()
         self.initCaptain()
         self.initRabbits()
+        self.initSnake()
 
     def remainingVeggies(self):
         """
@@ -260,6 +276,75 @@ class GameEngine:
         self.__field[row][col] = self.__captain
         
         pass
+
+    
+    def moveSnake(self):
+        
+        # get the direction between the snake and the captain
+        vectorX = self.__captain.getCol() - self.__snake.getCol()
+        vectorY = self.__captain.getRow() - self.__snake.getRow()
+
+        vectorX = vectorX // abs(vectorX) if vectorX != 0 else 0
+        vectorY = vectorY // abs(vectorY) if vectorY != 0 else 0
+
+        randomDirectionY = 0
+        randomDirectionX = 0
+
+        # randomly choose a direction
+        if vectorX == 0:
+            randomDirectionY = vectorY
+        elif vectorY == 0:
+            randomDirectionX = vectorX
+        else:
+            randomDirectionX, randomDirectionY = random.choice([(0, vectorY), (vectorX, 0)])
+        
+
+        attemptRow = self.__snake.getRow() + randomDirectionY
+        attemptCol = self.__snake.getCol() + randomDirectionX
+
+        # if the snake is moving out of the field, forfeit its move
+        if (attemptRow < 0 or attemptRow >= len(self.__field)
+                 or attemptCol < 0 or attemptCol >= len(self.__field[0])):
+            return
+        
+        
+        viggies = list(self.__veggieSymbol.values())
+
+        
+        # if the snake is moving to a space occupied by another rabbit or Veggie, forfeit its move
+        if self.__field[attemptRow][attemptCol]:
+            if (self.__field[attemptRow][attemptCol].getSymbol() == "R" or
+                self.__field[attemptRow][attemptCol].getSymbol() in viggies):
+                return
+        
+        # If the snake ever attempts to move into the same position as the
+        # captain, the captain loses the last five vegetables that were added to their basket and the snake is
+        # reset to a new random, unoccupied position on the field
+        if (self.__field[attemptRow][attemptCol] and
+                self.__field[attemptRow][attemptCol].getSymbol() == "V"):
+            print("Your are bitten by a snake !")
+            #pop out items
+            if len(self.__captain.getVeggieList()) >= 5:
+                for i in range(5):
+                    point = self.__veggieWorth[self.__captain.getVeggieList()[-1].getSymbol()]
+                    self.__captain.getVeggieList().pop()
+                    self.__score -= point
+            else:
+                self.__captain.getVeggieList().clear()
+                self.__score = 0
+
+            self.__field[self.__snake.getRow()][self.__snake.getCol()] = None
+            self.__snake = None
+            self.initSnake()
+            return
+        
+        # move the snake
+        self.__field[attemptRow][attemptCol] = self.__snake
+        self.__field[self.__snake.getRow()][self.__snake.getCol()] = None
+        self.__snake.setRow(attemptRow)
+        self.__snake.setCol(attemptCol)
+
+            
 
 
 
